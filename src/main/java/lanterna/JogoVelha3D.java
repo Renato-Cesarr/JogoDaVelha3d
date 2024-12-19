@@ -69,7 +69,7 @@ public class JogoVelha3D {
     }
 
     private static void drawLoadingBar(TextGraphics graphics, Screen screen) throws InterruptedException, IOException {
-        int barLength = 50;  
+        int barLength = 100;  
         int startX = 10;     
         int startY = 27;     
         String loadingText = "Carregando...";
