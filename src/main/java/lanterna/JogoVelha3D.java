@@ -1,7 +1,5 @@
 package lanterna;
-
 import java.io.IOException;
-
 import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
@@ -14,10 +12,10 @@ import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 public class JogoVelha3D {
 
     private static final String[] MENU_OPTIONS = {
-            "1. Jogar Local",
-            "2. Jogar LAN",
-            "3. Ranking",
-            "4. Sair"
+        "1. Jogar Local",
+        "2. Jogar LAN",
+        "3. Ranking",
+        "4. Sair"
     };
 
     public static void main(String[] args) {
@@ -27,8 +25,9 @@ public class JogoVelha3D {
             screen.startScreen();
 
             TextGraphics graphics = screen.newTextGraphics();
-            
+
             drawWizard(graphics, screen);
+
             drawLoadingBar(graphics, screen);
 
             displayMenu(graphics, screen);
@@ -40,23 +39,22 @@ public class JogoVelha3D {
     }
 
     private static void drawWizard(TextGraphics graphics, Screen screen) throws InterruptedException, IOException {
-    	String wizard = ""
-    	        + "          .--,-``-.                                                  \n"
-    	        + "                                                                                                   ,--,      ,---,                      /   /     '.\n"
-    	        + "                                                     ,---,                                       ,--.'|    ,--.' |                     / ../        ;        ,---,\n"
-    	        + "      .--.    ,---.                  ,---.         ,---.'|                                       |  | :    |  |  :                     \\ ``\\  .`-    '     ,---.'|\n"
-    	        + "    .--,`|   '   ,\\    ,----._,.   '   ,\\        |   | :                      .---.            :  : '    :  :  :                      \\___\\/   \\   :     |   | :\n"
-    	        + "    |  |.   /   /   |  /   /  ' /  /   /   |       |   | |    ,--.--.         /.  ./|    ,---.   |  ' |    :  |  |,--.    ,--.--.            \\   :   |     |   | |\n"
-    	        + "    '--`_  .   ; ,. : |   :     | .   ; ,. :     ,--.__| |   /       \\      .-' . ' |   /     \\  '  | |    |  :  '   |   /       \\           /  /   /    ,--.__| |\n"
-    	        + "    ,--,'| '   | |: : |   | .\\  . '   | |: :    /   ,'   |  .--.  .-. |    /___/ \\: |  /    /  | |  | :    |  |   /' :  .--.  .-. |          \\  \\   \\   /   ,'   |\n"
-    	        + "    |  | ' '   | .; : .   ; ';  | '   | .; :   .   '  /  |   \\__\\/ : . .    .   \\  ' . .    ' / | '  : |__  '  :  | | |   \\__\\/ : .      ___ /   :   | .   '  /  |\n"
-    	        + "    :  | | |   :    | '   .   . | |   :    |   '   ; |:  |   ,\" .--.; |     \\   \\   ' '   ;   /| |  | '.'| |  |  ' | :   ,\" .--.; |     /   /\\   /   : '   ; |:  |\n"
-    	        + "  __|  : '  \\   \\  /   `---`-'| |  \\   \\  /    |   | '/  '  /  /  ,.  |      \\   \\    '   |  / | ;  :    ; |  :  :_:,'  /  /  ,.  |    / ,,/  ',-    . |   | '/  '\n"
-    	        + ".''__ /\\_: |   `----'    .''__ /\\_: |   `----'     |   :    :| ;  :   .'   \\      \\   \\ | |   :    | |  ,   /  |  | ,'     ;  :   .'   \\   \\ ''\\        ;  |   :    :|\n"
-    	        + "|   :    :             |   :    :               \\   \\  /   |  ,     .-./       '---\"   \\   \\  /   ---`-'   `--''       |  ,     .-./    \\   \\     .'    \\   \\  /\n"
-    	        + " \\   \\  /               \\   \\  /                 `----'     `--`---'                    `----'                          `--`---'         `--`-,,-'       `----'\n"
-    	        + "  `--`-'                 `--`-'                                                                                                                        \n";
-
+        String wizard = ""
+                + "          .--,-``-.                                                  \n"
+                + "                                                                                                   ,--,      ,---,                      /   /     '.\n"
+                + "                                                     ,---,                                       ,--.'|    ,--.' |                     / ../        ;        ,---,\n"
+                + "      .--.    ,---.                  ,---.         ,---.'|                                       |  | :    |  |  :                     \\ ``\\  .`-    '     ,---.'|\n"
+                + "    .--,`|   '   ,\\    ,----._,.   '   ,\\        |   | :                      .---.            :  : '    :  :  :                      \\___\\/   \\   :     |   | :\n"
+                + "    |  |.   /   /   |  /   /  ' /  /   /   |       |   | |    ,--.--.         /.  ./|    ,---.   |  ' |    :  |  |,--.    ,--.--.            \\   :   |     |   | |\n"
+                + "    '--`_  .   ; ,. : |   :     | .   ; ,. :     ,--.__| |   /       \\      .-' . ' |   /     \\  '  | |    |  |   /' :  .--.  .-. |          /  /   /    ,--.__| |\n"
+                + "    ,--,'| '   | |: : |   | .\\  . '   | |: :    /   ,'   |  .--.  .-. |    /___/ \\: |  /    /  | |  | :    |  |   /' :  .--.  .-. |          \\  \\   \\   /   ,'   |\n"
+                + "    |  | ' '   | .; : .   ; ';  | '   | .; :   .   '  /  |   \\__\\/ : . .    .   \\  ' . .    ' / | '  : |__  '  :  | | |   \\__\\/ : .      ___ /   :   | .   '  /  |\n"
+                + "    :  | | |   :    | '   .   . | |   :    |   '   ; |:  |   ,\" .--.; |     \\   \\   ' '   ;   /| |  | '.'| |  |  ' | :   ,\" .--.; |     /   /\\   /   : '   ; |:  |\n"
+                + "  __|  : '  \\   \\  /   `---`-'| |  \\   \\  /    |   : '/  '  /  /  ,.  |      \\   \\    '   |  / | ;  :    ; |  :  :_:,'  /  /  ,.  |    / ,,/  ',-    . |   | '/  '\n"
+                + ".''__ /\\_: |   `----'    .''__ /\\_: |   `----'     |   :    :| ;  :   .'   \\      \\   \\ | |   :    | |  ,   /  |  | ,'     ;  :   .'   \\   \\ ''\\        ;  |   :    :|\n"
+                + "|   :    :             |   :    :               \\   \\  /   |  ,     .-./       '---\"   \\   \\  /   ---`-'   `--''       |  ,     .-./    \\   \\     .'    \\   \\  /\n"
+                + " \\   \\  /               \\   \\  /                 `----'     `--`---'                    `----'                          `--`---'         `--`-,,-'       `----'\n"
+                + "  `--`-'                 `--`-'                                                                                                                        \n";
 
         graphics.putString(10, 5, "Bem-vindo ao Jogo da Velha 3D!", SGR.BOLD);
         graphics.setForegroundColor(TextColor.Factory.fromString("#00FF00"));
@@ -102,9 +100,7 @@ public class JogoVelha3D {
                 graphics.setForegroundColor(TextColor.Factory.fromString("#00FF00"));  
             }
             
-            graphics.putString(startX, startY, progressBar.toString());
             screen.refresh();
-
             Thread.sleep(100);  
         }
 
@@ -115,6 +111,7 @@ public class JogoVelha3D {
 
     private static void displayMenu(TextGraphics graphics, Screen screen) throws Exception {
         int selectedOption = 0;
+
         while (true) {
             screen.clear();
             graphics.putString(10, 5, "Bem-vindo ao Jogo da Velha 3D!", SGR.BOLD);
@@ -133,11 +130,33 @@ public class JogoVelha3D {
             } else if (keyStroke.getKeyType() == KeyType.ArrowUp) {
                 selectedOption = (selectedOption - 1 + MENU_OPTIONS.length) % MENU_OPTIONS.length;
             } else if (keyStroke.getKeyType() == KeyType.Enter) {
-                if (selectedOption == MENU_OPTIONS.length - 1) {
-                    break;
-                }
-           
+                handleMenuOption(selectedOption, screen, graphics);
+                break;
             }
         }
     }
+
+    private static void handleMenuOption(int option, Screen screen, TextGraphics graphics) {
+        switch (option) {
+            case 0:
+                System.out.println("Iniciar Jogo Local...");
+                try {
+                	JogoVelha3DLogica.iniciarJogo(screen);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case 1:
+                System.out.println("Iniciar Jogo LAN...");
+                break;
+            case 2:
+                System.out.println("Visualizar Ranking...");
+                break;
+            case 3:
+                System.out.println("Saindo...");
+                System.exit(0);
+                break;
+        }
+    }
+
 }
