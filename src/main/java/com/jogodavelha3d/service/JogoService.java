@@ -11,156 +11,178 @@ import com.jogodavelha3d.controller.JogoController;
 import com.jogodavelha3d.util.AudioPlayer;
 import com.jogodavelha3d.util.PointsImageUtils;
 
-
 public class JogoService {
 
-    private static int pontosX = 0;
-    private static int pontosO = 0;
+	private static int pontosX = 0;
+	private static int pontosO = 0;
 
-    private static final String AUDIO_X_VITORIA = "/home/renato/Downloads/JogadorX-venceu.wav";
-    private static final String AUDIO_O_VITORIA = "/home/renato/Downloads/JogadorOVenceu.wav";
-    private static final String AUDIO_RESULTADO_FINAL = "/home/renato/Downloads/final.wav";
+	private static final String AUDIO_X_VITORIA = "/home/renato/Downloads/JogadorX-venceu.wav";
+	private static final String AUDIO_O_VITORIA = "/home/renato/Downloads/JogadorOVenceu.wav";
+	private static final String AUDIO_RESULTADO_FINAL = "/home/renato/Downloads/final.wav";
 
-    public static void iniciarJogo(Screen screen) throws IOException {
-        AudioPlayer.playAudio("/home/renato/Downloads/2024-12-23-01-41-17.wav");
-        JogoController controller = new JogoController();
+	public static void iniciarJogo(Screen screen) throws IOException {
+	    AudioPlayer.playAudio("/home/renato/Downloads/2024-12-23-01-41-17.wav");
 
-        exibirApresentador(screen, PointsImageUtils.apresentador());
+	    JogoController[] controllers = new JogoController[6];
+	    for (int i = 0; i < 6; i++) {
+	        controllers[i] = new JogoController(); 
+	    }
 
-        for (int jogoAtual = 0; jogoAtual < 6; jogoAtual++) {
-            controller.resetTabuleiro();
-            boolean playerXTurn = true;
+	    int selectedTabuleiro = 0; 
+	    for (int jogoAtual = 0; jogoAtual < 6; jogoAtual++) {
+	        controllers[jogoAtual].resetTabuleiro(); 
+	        boolean playerXTurn = true;
 
-            while (controller.isGameRunning()) {
-                screen.clear();
+	        while (controllers[jogoAtual].isGameRunning()) {
+	            screen.clear();
+	            displayTabuleiros(screen, controllers, selectedTabuleiro);
+	            displayTurn(screen, playerXTurn ? "X" : "O");
 
-                displayTabuleiro(screen, controller);
-                exibirApresentador(screen, PointsImageUtils.apresentador());
+	            KeyStroke keyStroke = screen.readInput();
 
-                displayTurn(screen, playerXTurn ? "X" : "O");
+	            if (keyStroke.getKeyType() == KeyType.Character) {
+	                char c = keyStroke.getCharacter();
+	                if (c == 'w' || c == 'W') {
+	                    if (selectedTabuleiro > 0) {
+	                        selectedTabuleiro--; 
+	                    }
+	                } else if (c == 's' || c == 'S') {
+	                    if (selectedTabuleiro < 5) {
+	                        selectedTabuleiro++; 
+	                    }
+	                } else if (c == 'a' || c == 'A') {
+	                    if (selectedTabuleiro % 3 != 0) {
+	                        selectedTabuleiro--; 
+	                    }
+	                } else if (c == 'd' || c == 'D') {
+	                    if (selectedTabuleiro % 3 != 2) {
+	                        selectedTabuleiro++; 
+	                    }
+	                }
+	            }
 
-                KeyStroke keyStroke = screen.readInput();
+	            if (keyStroke.getKeyType() == KeyType.ArrowUp) {
+	                controllers[selectedTabuleiro].moveSelection(-3);
+	            } else if (keyStroke.getKeyType() == KeyType.ArrowDown) {
+	                controllers[selectedTabuleiro].moveSelection(3);
+	            } else if (keyStroke.getKeyType() == KeyType.ArrowLeft) {
+	                controllers[selectedTabuleiro].moveSelection(-1);
+	            } else if (keyStroke.getKeyType() == KeyType.ArrowRight) {
+	                controllers[selectedTabuleiro].moveSelection(1);
+	            }
 
-                if (keyStroke.getKeyType() == KeyType.ArrowUp) {
-                    controller.moveSelection(-3);
-                } else if (keyStroke.getKeyType() == KeyType.ArrowDown) {
-                    controller.moveSelection(3);
-                } else if (keyStroke.getKeyType() == KeyType.ArrowLeft) {
-                    controller.moveSelection(-1);
-                } else if (keyStroke.getKeyType() == KeyType.ArrowRight) {
-                    controller.moveSelection(1);
-                }
+	            if (keyStroke.getKeyType() == KeyType.Enter) {
+	                if (controllers[selectedTabuleiro].markCell(playerXTurn ? 'X' : 'O')) {
+	                    if (controllers[selectedTabuleiro].checkVictory()) {
+	                        if (playerXTurn) {
+	                            pontosX++;
+	                            AudioPlayer.playAudio(AUDIO_X_VITORIA);
+	                        } else {
+	                            pontosO++;
+	                            AudioPlayer.playAudio(AUDIO_O_VITORIA);
+	                        }
+	                        displayResult(screen, playerXTurn ? "X" : "O");
+	                        controllers[selectedTabuleiro].stopGame();
+	                    } else if (controllers[selectedTabuleiro].checkDraw()) {
+	                        displayResult(screen, "Empate");
+	                        controllers[selectedTabuleiro].stopGame();
+	                    } else {
+	                        playerXTurn = !playerXTurn;
+	                    }
+	                } else {
+	                    displayInvalidMove(screen);
+	                }
+	            }
+	        }
+	    }
 
-                if (keyStroke.getKeyType() == KeyType.Enter) {
-                    if (controller.markCell(playerXTurn ? 'X' : 'O')) {
-                        if (controller.checkVictory()) {
-                            if (playerXTurn) {
-                                pontosX++;
-                                AudioPlayer.playAudio(AUDIO_X_VITORIA);  
-                            } else {
-                                pontosO++;
-                                AudioPlayer.playAudio(AUDIO_O_VITORIA);  
-                            }
-                            displayResult(screen, playerXTurn ? "X" : "O");
-                            controller.stopGame();
-                        } else if (controller.checkDraw()) {
-                            displayResult(screen, "Empate");
-                            controller.stopGame();
-                        } else {
-                            playerXTurn = !playerXTurn;
-                        }
-                    } else {
-                        displayInvalidMove(screen);
-                    }
-                }
-            }
-        }
+	    displayFinalResult(screen);
+	    screen.clear();
+	    screen.refresh();
+	}
 
-        displayFinalResult(screen);
-    }
+	private static void displayTabuleiros(Screen screen, JogoController[] controllers, int selectedTabuleiro) throws IOException {
+	    TextGraphics graphics = screen.newTextGraphics();
+	    int startX = 10;
+	    int startY = 5;
 
-    private static void displayTabuleiro(Screen screen, JogoController controller) throws IOException {
-        char[] tabuleiro = controller.getTabuleiro();
-        int selectedCell = controller.getSelectedCell();
-        TextGraphics graphics = screen.newTextGraphics();
+	    graphics.putString(startX - 4, startY - 2, "Jogo da Velha 3D");
 
-        int startX = 10;
-        int startY = 5;
+	    int offsetXFirst = startX + 12;
+	    displaySingleTabuleiro(graphics, controllers[0], selectedTabuleiro == 0, offsetXFirst, startY);
 
-        graphics.putString(startX - 4, startY - 1, "Jogo da Velha");
+	    int offsetY = startY + 7;
+	    for (int j = 0; j < 4; j++) {
+	        int offsetX = startX + (j * 12);
+	        displaySingleTabuleiro(graphics, controllers[j + 1], selectedTabuleiro == j + 1, offsetX, offsetY);
+	    }
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                int pos = i * 3 + j;
-                String cell = String.valueOf(tabuleiro[pos]);
+	    int offsetXLast = startX + 12;
+	    displaySingleTabuleiro(graphics, controllers[5], selectedTabuleiro == 5, offsetXLast, startY + 13);
 
-                if (pos == selectedCell) {
-                    cell = "[" + cell + "]";
-                }
+	    graphics.putString(10, 31, "Pontos de X: " + pontosX + " | Pontos de O: " + pontosO);
+	    graphics.putString(10, 32, "Pressione ENTER para jogar");
+	    screen.refresh();
+	}
 
-                if (cell.equals("X")) {
-                    graphics.setForegroundColor(TextColor.Factory.fromString("#FF0000"));
-                } else if (cell.equals("O")) {
-                    graphics.setForegroundColor(TextColor.Factory.fromString("#0000FF"));
-                } else {
-                    graphics.setForegroundColor(TextColor.Factory.fromString("#FFFFFF"));
-                }
 
-                graphics.putString(startX + (j * 4), startY + (i * 2), cell);
 
-                if (j < 2) {
-                    graphics.putString(startX + (j * 4) + 3, startY + (i * 2), "|");
-                }
-                if (i < 2) {
-                    graphics.putString(startX + (j * 4), startY + (i * 2) + 1, "-");
-                }
-            }
-        }
 
-        graphics.setForegroundColor(TextColor.Factory.fromString("#FFFFFF"));
-        graphics.putString(startX - 4, startY + 7, "Pressione ENTER para jogar");
-        graphics.putString(10, 18, "Pontos de X: " + pontosX + " | Pontos de O: " + pontosO);
+	private static void displaySingleTabuleiro(TextGraphics graphics, JogoController controller, boolean isSelected, int startX, int startY) {
+	    char[] tabuleiro = controller.getTabuleiro();
+	    int selectedCell = controller.getSelectedCell();
 
-        screen.refresh();
-    }
+	    for (int i = 0; i < 3; i++) {
+	        for (int j = 0; j < 3; j++) {
+	            int pos = i * 3 + j;
+	            char cellChar = tabuleiro[pos];
+	            String cell = (cellChar == '\0') ? " " : String.valueOf(cellChar);
 
-    private static void displayTurn(Screen screen, String player) throws IOException {
-        screen.newTextGraphics().putString(10, 20, "Vez do jogador: " + player);
-        screen.refresh();
-    }
+	            if (isSelected && pos == selectedCell) {
+	                cell = "[" + cell + "]";
+	            }
 
-    private static void displayResult(Screen screen, String resultado) throws IOException {
-        screen.clear();
-        screen.newTextGraphics().putString(10, 20, "Resultado: " + resultado);
-        screen.refresh();
-        screen.readInput();
-    }
+	            int cellX = startX + (j * 4);
+	            int cellY = startY + (i * 2);
+	            graphics.putString(cellX, cellY, cell);
 
-    private static void displayInvalidMove(Screen screen) throws IOException {
-        screen.newTextGraphics().putString(10, 20, "Essa posição já foi! Escolha outra.");
-        screen.refresh();
-        screen.readInput();
-    }
+	            if (j < 2) {
+	                graphics.putString(startX + (j * 4) + 2, cellY, "|");
+	            }
+	            if (i < 2) {
+	                graphics.putString(cellX, cellY + 1, "-");
+	            }
+	        }
+	    }
+	}
 
-    private static void displayFinalResult(Screen screen) throws IOException {
-        screen.clear();
-        AudioPlayer.playAudio(AUDIO_RESULTADO_FINAL);
-        screen.newTextGraphics().putString(10, 5, "Jogo Finalizado!");
-        screen.newTextGraphics().putString(10, 7, "Pontos de X: " + pontosX);
-        screen.newTextGraphics().putString(10, 9, "Pontos de O: " + pontosO);
-        screen.refresh();
-        screen.readInput();
-    }
-    public static void exibirApresentador(Screen screen, String[] apresentadorSilvio) throws IOException {
-        TextGraphics graphics = screen.newTextGraphics();
-        int startX = 50;  
-        int startY = 5;
 
-        for (int i = 0; i < apresentadorSilvio.length; i++) {
-            graphics.putString(startX, startY + i, apresentadorSilvio[i]);
-        }
+	private static void displayTurn(Screen screen, String player) throws IOException {
+		screen.newTextGraphics().putString(10, 30, "Vez do jogador: " + player);
+		screen.refresh();
+	}
 
-        screen.refresh();
-    }
-    
+	private static void displayResult(Screen screen, String resultado) throws IOException {
+		screen.clear();
+		screen.newTextGraphics().putString(10, 30, "Resultado: " + resultado);
+		screen.refresh();
+		screen.readInput();
+	}
+
+	private static void displayInvalidMove(Screen screen) throws IOException {
+		screen.newTextGraphics().putString(10, 30, "Essa posição já foi! Escolha outra.");
+		screen.refresh();
+		screen.readInput();
+	}
+
+	private static void displayFinalResult(Screen screen) throws IOException {
+		screen.clear();
+		AudioPlayer.playAudio(AUDIO_RESULTADO_FINAL);
+		screen.newTextGraphics().putString(10, 5, "Jogo Finalizado!");
+		screen.newTextGraphics().putString(10, 7, "Pontos de X: " + pontosX);
+		screen.newTextGraphics().putString(10, 9, "Pontos de O: " + pontosO);
+		screen.refresh();
+		screen.readInput();
+	}
+
 }

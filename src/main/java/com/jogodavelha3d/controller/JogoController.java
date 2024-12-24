@@ -1,10 +1,30 @@
 package com.jogodavelha3d.controller;
 
 public class JogoController {
+    private char[] tabuleiro;
+    private int selectedCell;
+    private boolean gameRunning;
 
-    private char[] tabuleiro = new char[9];
-    private int selectedCell = 0;
-    private boolean gameRunning = true;
+    public JogoController() {
+        resetTabuleiro();
+    }
+
+    public void resetTabuleiro() {
+        tabuleiro = new char[9]; 
+        for (int i = 0; i < tabuleiro.length; i++) {
+            tabuleiro[i] = ' '; 
+        }
+        selectedCell = 0; 
+        gameRunning = true;
+    }
+
+    public boolean isGameRunning() {
+        return gameRunning;
+    }
+
+    public void stopGame() {
+        gameRunning = false;
+    }
 
     public char[] getTabuleiro() {
         return tabuleiro;
@@ -14,61 +34,49 @@ public class JogoController {
         return selectedCell;
     }
 
-    public boolean isGameRunning() {
-        return gameRunning;
-    }
-
-    public void resetTabuleiro() {
-        for (int i = 0; i < tabuleiro.length; i++) {
-            tabuleiro[i] = ' ';
-        }
-        selectedCell = 0;
-        gameRunning = true;
-    }
-
-    public boolean checkVictory() {
-        for (int i = 0; i < 3; i++) {
-            if (tabuleiro[i * 3] == tabuleiro[i * 3 + 1] && tabuleiro[i * 3 + 1] == tabuleiro[i * 3 + 2]
-                    && tabuleiro[i * 3] != ' ') {
-                return true;
-            }
-        }
-        for (int i = 0; i < 3; i++) {
-            if (tabuleiro[i] == tabuleiro[i + 3] && tabuleiro[i + 3] == tabuleiro[i + 6] && tabuleiro[i] != ' ') {
-                return true;
-            }
-        }
-        if (tabuleiro[0] == tabuleiro[4] && tabuleiro[4] == tabuleiro[8] && tabuleiro[0] != ' ') {
-            return true;
-        }
-        if (tabuleiro[2] == tabuleiro[4] && tabuleiro[4] == tabuleiro[6] && tabuleiro[2] != ' ') {
-            return true;
-        }
-        return false;
-    }
-
-    public boolean checkDraw() {
-        for (char c : tabuleiro) {
-            if (c == ' ') {
-                return false;
-            }
-        }
-        return true;
+    public void moveSelection(int offset) {
+        selectedCell = (selectedCell + offset + 9) % 9; 
     }
 
     public boolean markCell(char player) {
-        if (tabuleiro[selectedCell] == ' ') {
-            tabuleiro[selectedCell] = player;
-            return true;
+        if (!gameRunning || tabuleiro[selectedCell] != ' ') {
+            return false;
         }
-        return false;
+
+        // Marca a célula
+        tabuleiro[selectedCell] = player;
+
+        if (checkVictory()) {
+            gameRunning = false; 
+        } else if (checkDraw()) {
+            gameRunning = false; 
+        }
+
+        return true; 
     }
 
-    public void moveSelection(int offset) {
-        selectedCell = (selectedCell + offset + 9) % 9;
+    public boolean checkVictory() {
+        int[][] winningCombinations = {
+            {0, 1, 2}, {3, 4, 5}, {6, 7, 8}, 
+            {0, 3, 6}, {1, 4, 7}, {2, 5, 8}, 
+            {0, 4, 8}, {2, 4, 6}            
+        };
+        for (int[] combination : winningCombinations) {
+            if (tabuleiro[combination[0]] != ' ' &&
+                tabuleiro[combination[0]] == tabuleiro[combination[1]] &&
+                tabuleiro[combination[1]] == tabuleiro[combination[2]]) {
+                return true; 
+            }
+        }
+        return false; 
     }
 
-    public void stopGame() {
-        gameRunning = false;
+    public boolean checkDraw() {
+        for (char cell : tabuleiro) {
+            if (cell == ' ') { 
+                return false;
+            }
+        }
+        return true; 
     }
 }
