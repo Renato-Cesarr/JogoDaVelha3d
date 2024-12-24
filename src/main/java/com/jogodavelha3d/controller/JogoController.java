@@ -4,18 +4,21 @@ public class JogoController {
     private char[] tabuleiro;
     private int selectedCell;
     private boolean gameRunning;
+    private boolean gameOver; 
 
     public JogoController() {
         resetTabuleiro();
     }
 
     public void resetTabuleiro() {
-        tabuleiro = new char[9]; 
-        for (int i = 0; i < tabuleiro.length; i++) {
-            tabuleiro[i] = ' '; 
+        if (!gameOver) { 
+            tabuleiro = new char[9]; 
+            for (int i = 0; i < tabuleiro.length; i++) {
+                tabuleiro[i] = ' '; 
+            }
+            selectedCell = 0; 
+            gameRunning = true;
         }
-        selectedCell = 0; 
-        gameRunning = true;
     }
 
     public boolean isGameRunning() {
@@ -40,16 +43,17 @@ public class JogoController {
 
     public boolean markCell(char player) {
         if (!gameRunning || tabuleiro[selectedCell] != ' ') {
-            return false;
+            return false;  
         }
 
-        // Marca a célula
         tabuleiro[selectedCell] = player;
 
         if (checkVictory()) {
-            gameRunning = false; 
+            gameRunning = false;
+            setGameOver(); 
         } else if (checkDraw()) {
             gameRunning = false; 
+            setGameOver();  
         }
 
         return true; 
@@ -65,7 +69,7 @@ public class JogoController {
             if (tabuleiro[combination[0]] != ' ' &&
                 tabuleiro[combination[0]] == tabuleiro[combination[1]] &&
                 tabuleiro[combination[1]] == tabuleiro[combination[2]]) {
-                return true; 
+                return true;
             }
         }
         return false; 
@@ -78,5 +82,13 @@ public class JogoController {
             }
         }
         return true; 
+    }
+
+    public void setGameOver() {
+        gameOver = true; 
+    }
+
+    public boolean isGameOver() {
+        return gameOver;  
     }
 }

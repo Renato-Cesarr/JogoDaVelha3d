@@ -24,18 +24,24 @@ public class JogoService {
 	    AudioPlayer.playAudio("/home/renato/Downloads/2024-12-23-01-41-17.wav");
 
 	    JogoController[] controllers = new JogoController[6];
+		exibirApresentador(screen, PointsImageUtils.apresentador());
+
 	    for (int i = 0; i < 6; i++) {
 	        controllers[i] = new JogoController(); 
 	    }
 
-	    int selectedTabuleiro = 0; 
+	    int selectedTabuleiro = 0;
 	    for (int jogoAtual = 0; jogoAtual < 6; jogoAtual++) {
-	        controllers[jogoAtual].resetTabuleiro(); 
+	        if (!controllers[jogoAtual].isGameOver()) {
+	            controllers[jogoAtual].resetTabuleiro();
+	        }
+
 	        boolean playerXTurn = true;
 
 	        while (controllers[jogoAtual].isGameRunning()) {
 	            screen.clear();
-	            displayTabuleiros(screen, controllers, selectedTabuleiro);
+	            displayTabuleiros(screen, controllers, selectedTabuleiro); 
+				exibirApresentador(screen, PointsImageUtils.apresentador());
 	            displayTurn(screen, playerXTurn ? "X" : "O");
 
 	            KeyStroke keyStroke = screen.readInput();
@@ -44,11 +50,11 @@ public class JogoService {
 	                char c = keyStroke.getCharacter();
 	                if (c == 'w' || c == 'W') {
 	                    if (selectedTabuleiro > 0) {
-	                        selectedTabuleiro--; 
+	                        selectedTabuleiro--;
 	                    }
 	                } else if (c == 's' || c == 'S') {
 	                    if (selectedTabuleiro < 5) {
-	                        selectedTabuleiro++; 
+	                        selectedTabuleiro++;
 	                    }
 	                } else if (c == 'a' || c == 'A') {
 	                    if (selectedTabuleiro % 3 != 0) {
@@ -83,9 +89,11 @@ public class JogoService {
 	                        }
 	                        displayResult(screen, playerXTurn ? "X" : "O");
 	                        controllers[selectedTabuleiro].stopGame();
+	                        controllers[selectedTabuleiro].setGameOver();
 	                    } else if (controllers[selectedTabuleiro].checkDraw()) {
 	                        displayResult(screen, "Empate");
 	                        controllers[selectedTabuleiro].stopGame();
+	                        controllers[selectedTabuleiro].setGameOver();
 	                    } else {
 	                        playerXTurn = !playerXTurn;
 	                    }
@@ -95,11 +103,11 @@ public class JogoService {
 	            }
 	        }
 	    }
-
 	    displayFinalResult(screen);
 	    screen.clear();
 	    screen.refresh();
 	}
+
 
 	private static void displayTabuleiros(Screen screen, JogoController[] controllers, int selectedTabuleiro) throws IOException {
 	    TextGraphics graphics = screen.newTextGraphics();
@@ -107,6 +115,7 @@ public class JogoService {
 	    int startY = 5;
 
 	    graphics.putString(startX - 4, startY - 2, "Jogo da Velha 3D");
+	    PointsImageUtils.desenhoJogo(screen);
 
 	    int offsetXFirst = startX + 12;
 	    displaySingleTabuleiro(graphics, controllers[0], selectedTabuleiro == 0, offsetXFirst, startY);
@@ -119,9 +128,10 @@ public class JogoService {
 
 	    int offsetXLast = startX + 12;
 	    displaySingleTabuleiro(graphics, controllers[5], selectedTabuleiro == 5, offsetXLast, startY + 13);
-
-	    graphics.putString(10, 31, "Pontos de X: " + pontosX + " | Pontos de O: " + pontosO);
-	    graphics.putString(10, 32, "Pressione ENTER para jogar");
+	    
+	    PointsImageUtils.desenhoJogoBaixo(screen);
+	    graphics.putString(10, 40, "Pontos de X: " + pontosX + " | Pontos de O: " + pontosO);
+	    graphics.putString(10, 41, "Pressione ENTER para jogar");
 	    screen.refresh();
 	}
 
@@ -136,7 +146,15 @@ public class JogoService {
 	        for (int j = 0; j < 3; j++) {
 	            int pos = i * 3 + j;
 	            char cellChar = tabuleiro[pos];
-	            String cell = (cellChar == '\0') ? " " : String.valueOf(cellChar);
+	            String cell = (cellChar == ' ') ? " " : String.valueOf(cellChar);
+
+	            if (cellChar == 'X') {
+	                graphics.setForegroundColor(TextColor.ANSI.RED);
+	            } else if (cellChar == 'O') {
+	                graphics.setForegroundColor(TextColor.ANSI.BLUE);
+	            } else {
+	                graphics.setForegroundColor(TextColor.ANSI.WHITE);
+	            }
 
 	            if (isSelected && pos == selectedCell) {
 	                cell = "[" + cell + "]";
@@ -146,6 +164,7 @@ public class JogoService {
 	            int cellY = startY + (i * 2);
 	            graphics.putString(cellX, cellY, cell);
 
+	            graphics.setForegroundColor(TextColor.ANSI.WHITE);
 	            if (j < 2) {
 	                graphics.putString(startX + (j * 4) + 2, cellY, "|");
 	            }
@@ -154,23 +173,25 @@ public class JogoService {
 	            }
 	        }
 	    }
+	    graphics.setForegroundColor(TextColor.ANSI.WHITE);
 	}
 
 
+
 	private static void displayTurn(Screen screen, String player) throws IOException {
-		screen.newTextGraphics().putString(10, 30, "Vez do jogador: " + player);
+		screen.newTextGraphics().putString(10, 39, "Vez do jogador: " + player);
 		screen.refresh();
 	}
 
 	private static void displayResult(Screen screen, String resultado) throws IOException {
 		screen.clear();
-		screen.newTextGraphics().putString(10, 30, "Resultado: " + resultado);
+		screen.newTextGraphics().putString(10, 39, "Resultado: " + resultado);
 		screen.refresh();
 		screen.readInput();
 	}
 
 	private static void displayInvalidMove(Screen screen) throws IOException {
-		screen.newTextGraphics().putString(10, 30, "Essa posição já foi! Escolha outra.");
+		screen.newTextGraphics().putString(10, 39, "Essa posição já foi! Escolha outra.");
 		screen.refresh();
 		screen.readInput();
 	}
@@ -183,6 +204,17 @@ public class JogoService {
 		screen.newTextGraphics().putString(10, 9, "Pontos de O: " + pontosO);
 		screen.refresh();
 		screen.readInput();
+	}
+	public static void exibirApresentador(Screen screen, String[] apresentadorSilvio) throws IOException {
+		TextGraphics graphics = screen.newTextGraphics();
+		int startX = 60;
+		int startY = 5;
+
+		for (int i = 0; i < apresentadorSilvio.length; i++) {
+			graphics.putString(startX, startY + i, apresentadorSilvio[i]);
+		}
+
+		screen.refresh();
 	}
 
 }
