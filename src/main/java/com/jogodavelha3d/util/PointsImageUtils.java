@@ -54,7 +54,7 @@ public class PointsImageUtils {
 	    graphics.putString(startX - 4, startY + 27, "|        '                              '-'   A      |");
 	    graphics.putString(startX - 4, startY + 28, "|                                 ___   ___          |");
 	    graphics.putString(startX - 4, startY + 29, "|                                (___) (___)  ,.,    |");
-	    graphics.putString(startX - 4, startY + 30, "|                               select start ;:;:    |");
+	    graphics.putString(startX - 4, startY + 30, "|                               select start    ;:;: |");
 	    graphics.putString(startX - 4, startY + 31, "|                                             ,;:;' /");
 	    graphics.putString(startX - 4, startY + 32, "|                                            ,:;:'.'");
 	    graphics.putString(startX - 4, startY + 33, "'------------------------------------------------`");

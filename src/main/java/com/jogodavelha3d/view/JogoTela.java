@@ -10,7 +10,7 @@ import com.jogodavelha3d.util.*;
 
 public class JogoTela {
 
-	public static void drawWizard(TextGraphics graphics, Screen screen) throws InterruptedException, IOException {
+	public static void DesenhoMenu(TextGraphics graphics, Screen screen) throws InterruptedException, IOException {
 		String logoJogo = PointsImageUtils.pointsJogoDaVelha3D();
 
 		graphics.putString(10, 5, "Bem-vindo ao Jogo da Velha 3D!", SGR.BOLD);
@@ -23,7 +23,7 @@ public class JogoTela {
 		Thread.sleep(2000);
 	}
 
-	public static void drawLoadingBar(TextGraphics graphics, Screen screen) throws InterruptedException, IOException {
+	public static void DesenhoBarraCarregamento(TextGraphics graphics, Screen screen) throws InterruptedException, IOException {
 		int barLength = 100;
 		int startX = 10;
 		int startY = 27;

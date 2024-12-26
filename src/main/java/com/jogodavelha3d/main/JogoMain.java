@@ -22,11 +22,11 @@ public class JogoMain {
 
             TextGraphics graphics = screen.newTextGraphics();
 
-            JogoTela.drawWizard(graphics, screen); 
+            JogoTela.DesenhoMenu(graphics, screen); 
             
             AudioPlayer.playAudio(musicaTema);
 
-            JogoTela.drawLoadingBar(graphics, screen);
+            JogoTela.DesenhoBarraCarregamento(graphics, screen);
 
             ControleTelas.displayMenu(graphics, screen);
 

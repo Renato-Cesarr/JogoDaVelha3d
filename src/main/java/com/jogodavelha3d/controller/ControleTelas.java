@@ -40,18 +40,19 @@ public class ControleTelas {
 			} else if (keyStroke.getKeyType() == KeyType.ArrowUp) {
 				selectedOption = (selectedOption - 1 + JogoModel.MENU_OPTIONS.length) % JogoModel.MENU_OPTIONS.length;
 			} else if (keyStroke.getKeyType() == KeyType.Enter) {
-				handleMenuOption(selectedOption, screen, graphics);
+				MenuOpcoes(selectedOption, screen, graphics);
 				break;
 			}
 		}
 	}
 
-	public static void handleMenuOption(int option, Screen screen, TextGraphics graphics) {
+	public static void MenuOpcoes(int option, Screen screen, TextGraphics graphics) {
 		switch (option) {
 		case 0:
 			System.out.println("Iniciar Jogo Local...");
 			try {
-				JogoService.iniciarJogo(screen);
+				JogoService jogoService = new JogoService();
+				jogoService.iniciarJogo(screen);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
