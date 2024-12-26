@@ -12,61 +12,74 @@ import com.jogodavelha3d.model.*;
 import com.jogodavelha3d.service.JogoService;
 
 public class ControleTelas {
-	
-	public static void displayMenu(TextGraphics graphics, Screen screen) throws Exception {
-		int selectedOption = 0;
-		String[] pointVideoGame = PointsImageUtils.pointsGame();
 
-		while (true) {
-			screen.clear();
-			graphics.putString(10, 5, "Bem-vindo ao Jogo da Velha 3D!", SGR.BOLD);
+    public static void displayMenu(TextGraphics graphics, Screen screen) throws Exception {
+        int selectedOption = 0;
+        String[] pointVideoGame = PointsImageUtils.pointsGame();
 
-			for (int i = 0; i < pointVideoGame.length; i++) {
-				graphics.putString(10, 7 + i, pointVideoGame[i], SGR.BOLD);
-			}
+        boolean continuar = true;
 
-			for (int i = 0; i < JogoModel.MENU_OPTIONS.length; i++) {
-				if (i == selectedOption) {
-					graphics.putString(10, 23 + i, JogoModel.MENU_OPTIONS[i], SGR.REVERSE);
-				} else {
-					graphics.putString(10, 23 + i, JogoModel.MENU_OPTIONS[i]);
-				}
-			}
-			screen.refresh();
+        while (continuar) {
+            screen.clear();
+            exibirTitulo(graphics);
+            exibirPontos(graphics, pointVideoGame);
+            exibirMenu(graphics, selectedOption);
 
-			KeyStroke keyStroke = screen.readInput();
-			if (keyStroke.getKeyType() == KeyType.ArrowDown) {
-				selectedOption = (selectedOption + 1) % JogoModel.MENU_OPTIONS.length;
-			} else if (keyStroke.getKeyType() == KeyType.ArrowUp) {
-				selectedOption = (selectedOption - 1 + JogoModel.MENU_OPTIONS.length) % JogoModel.MENU_OPTIONS.length;
-			} else if (keyStroke.getKeyType() == KeyType.Enter) {
-				MenuOpcoes(selectedOption, screen, graphics);
-				break;
-			}
-		}
-	}
+            screen.refresh();
+            KeyStroke keyStroke = screen.readInput();
+            selectedOption = processarNavegacao(keyStroke, selectedOption);
 
-	public static void MenuOpcoes(int option, Screen screen, TextGraphics graphics) {
-		switch (option) {
-		case 0:
-			System.out.println("Iniciar Jogo Local...");
-			try {
-				JogoService jogoService = new JogoService();
-				jogoService.iniciarJogo(screen);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			break;
-		case 1:
-			System.out.println("Iniciar Jogo LAN...");
-			break;
-		case 2:
-			System.out.println("Visualizar Ranking...");
-			break;
-		case 3:
-			System.out.println("Saindo...");
-			System.exit(0);
-			break;
-		}
-	}
+            if (keyStroke.getKeyType() == KeyType.Enter) {
+                MenuOpcoes(selectedOption, screen, graphics);
+                continuar = false;
+            }
+        }
+    }
+
+    private static void exibirTitulo(TextGraphics graphics) {
+        graphics.putString(10, 5, "Bem-vindo ao Jogo da Velha 3D!", SGR.BOLD);
+    }
+
+    private static void exibirPontos(TextGraphics graphics, String[] pointVideoGame) {
+        for (int i = 0; i < pointVideoGame.length; i++) {
+            graphics.putString(10, 7 + i, pointVideoGame[i], SGR.BOLD);
+        }
+    }
+
+    private static void exibirMenu(TextGraphics graphics, int selectedOption) {
+        for (int i = 0; i < JogoModel.MENU_OPTIONS.length; i++) {
+            SGR sgr = (i == selectedOption) ? SGR.REVERSE : SGR.BOLD;
+            graphics.putString(10, 23 + i, JogoModel.MENU_OPTIONS[i], sgr);
+        }
+    }
+
+    private static int processarNavegacao(KeyStroke keyStroke, int selectedOption) {
+        if (keyStroke.getKeyType() == KeyType.ArrowDown) {
+            return (selectedOption + 1) % JogoModel.MENU_OPTIONS.length;
+        } else if (keyStroke.getKeyType() == KeyType.ArrowUp) {
+            return (selectedOption - 1 + JogoModel.MENU_OPTIONS.length) % JogoModel.MENU_OPTIONS.length;
+        }
+        return selectedOption;
+    }
+
+    public static void MenuOpcoes(int option, Screen screen, TextGraphics graphics) {
+        switch (option) {
+            case 0:
+                iniciarJogoLocal(screen);
+                break;
+            case 3:
+                System.out.println("Saindo...");
+                System.exit(0);
+                break;
+        }
+    }
+
+    private static void iniciarJogoLocal(Screen screen) {
+        System.out.println("Iniciar Jogo Local...");
+        try {
+            JogoService.iniciarJogo(screen);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
